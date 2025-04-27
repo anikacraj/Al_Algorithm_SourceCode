@@ -15,21 +15,20 @@ def iterative_deepening_dfs(graph, start, max_depth):
 
 def main():
     n = int(input("Enter number of nodes: "))
-    graph = [[] for _ in range(n)]
+    graph = [[] for _ in range(n + 1)]  # +1 because nodes are 1-indexed
 
     e = int(input("Enter number of edges: "))
-    print("Enter each edge in the format 'u v' (0-based index):")
+    print("Enter each edge in the format 'u v' (1-based index):")
 
     for _ in range(e):
         u, v = map(int, input().split())
         graph[u].append(v)
-      
+        graph[v].append(u)  # If undirected graph
 
     start = int(input("Enter starting node for IDS: "))
     max_depth = int(input("Enter maximum depth to search: "))
 
     print("\nIterative Deepening DFS Traversal:")
     iterative_deepening_dfs(graph, start, max_depth)
-
 
 main()
