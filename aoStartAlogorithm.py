@@ -1,16 +1,15 @@
-# AO* Algorithm Beginner Friendly
 class Graph:
     def __init__(self):
-        self.graph = {}  # Node -> list of (child, cost)
-        self.heuristic = {}  # Heuristic value for each node
+        self.graph = {}  # Node -> list of child sets (each set can have one or more children)
+        self.heuristic = {}  # Node -> heuristic value
 
     def add_node(self, node, heuristic_value):
         self.heuristic[node] = heuristic_value
         if node not in self.graph:
             self.graph[node] = []
 
-    def add_edge(self, parent, children):
-        self.graph[parent].append(children)
+    def add_edge(self, parent, children_set):
+        self.graph[parent].append(children_set)
 
     def get_neighbors(self, node):
         return self.graph.get(node, [])
@@ -19,7 +18,7 @@ class AOStar:
     def __init__(self, graph, start_node):
         self.graph = graph
         self.start_node = start_node
-        self.solution = {}  # Final solution path
+        self.solution = {}
 
     def ao_star(self, node):
         if node not in self.graph.graph or not self.graph.graph[node]:
@@ -30,16 +29,16 @@ class AOStar:
 
         for children in self.graph.get_neighbors(node):
             cost = 0
-            for child in children:
-                cost += child[1] + self.graph.heuristic[child[0]]
+            for child, edge_cost in children:
+                cost += edge_cost + self.graph.heuristic[child]
             if cost < min_cost:
                 min_cost = cost
                 best_children = children
 
-        self.solution[node] = [child[0] for child in best_children]
+        self.solution[node] = [child for child, _ in best_children]
 
-        for child in best_children:
-            self.ao_star(child[0])
+        for child, _ in best_children:
+            self.ao_star(child)
 
         self.graph.heuristic[node] = min_cost
         return self.graph.heuristic[node]
@@ -55,30 +54,29 @@ class AOStar:
 def main():
     graph = Graph()
 
-    n = int(input("Enter number of nodes: "))
-    print("Enter node names:")
+    # Add nodes and heuristic values (from image)
+    graph.add_node('A', 999)  # initial large heuristic
+    graph.add_node('B', 999)
+    graph.add_node('C', 999)
+    graph.add_node('D', 999)
+    graph.add_node('E', 7)
+    graph.add_node('F', 9)
+    graph.add_node('G', 3)
+    graph.add_node('H', 0)
+    graph.add_node('I', 0)
+    graph.add_node('J', 0)
 
-    for _ in range(n):
-        node = input("Node name: ")
-        heuristic = int(input(f"Heuristic value for {node}: "))
-        graph.add_node(node, heuristic)
+    # Add edges (parent -> [(child, cost)])
+    graph.add_edge('A', [('B', 9)])
+    graph.add_edge('A', [('C', 2)])
+    graph.add_edge('A', [('D', 8)])
+    graph.add_edge('B', [('E', 8)])
+    graph.add_edge('B', [('F', 9)])
+    graph.add_edge('C', [('G', 3)])
+    graph.add_edge('C', [('H', 2), ('I', 2)])
+    graph.add_edge('D', [('J', 1)])
 
-    e = int(input("Enter number of edges: "))
-    print("Enter edges in format 'Parent (Child1 cost1,Child2 cost2,...)'")
-    print("Example: A (B 1,C 2)")
-
-    for _ in range(e):
-        line = input("Edge: ").strip()
-        parent, children_part = line.split('(')
-        parent = parent.strip()
-        children_part = children_part.strip(')')
-        children_list = []
-        for child_info in children_part.split(','):
-            child_name, cost = child_info.split()
-            children_list.append((child_name.strip(), int(cost)))
-        graph.add_edge(parent, children_list)
-
-    start_node = input("Enter the start node: ")
+    start_node = 'A'
 
     ao_star_solver = AOStar(graph, start_node)
     ao_star_solver.ao_star(start_node)

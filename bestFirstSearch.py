@@ -24,21 +24,35 @@ def best_first_search(graph, heuristics, start, goal):
     return False
 
 def main():
-    n = int(input("Enter number of nodes: "))
-    graph = [[] for _ in range(n)]
+    # Hardcoded graph
+    graph = {
+        0: [(1, 2), (2, 4)],
+        1: [(0, 2), (3, 7), (4, 6)],
+        2: [(0, 4), (4, 5)],
+        3: [(1, 7), (5, 1)],
+        4: [(1, 6), (2, 5), (5, 2)],
+        5: [(3, 1), (4, 2)]
+    }
 
-    e = int(input("Enter number of edges: "))
-    print("Enter each edge in the format 'u v cost' (0-based index):")
-    for _ in range(e):
-        u, v, cost = map(int, input().split())
-        graph[u].append((v, cost))
-        graph[v].append((u, cost))  # undirected; remove if directed
+    heuristics = {
+        0: 7,
+        1: 6,
+        2: 5,
+        3: 1,
+        4: 2,
+        5: 0
+    }
 
-    print("\nEnter heuristic values for each node:")
-    heuristics = list(map(int, input(f"Enter {n} space-separated heuristic values: ").split()))
+    start = 0
+    goal = 5
 
-    start = int(input("Enter start node: "))
-    goal = int(input("Enter goal node: "))
+    print("Graph structure:")
+    for node in graph:
+        print(f"{node} --> {graph[node]}")
+
+    print("\nHeuristics:")
+    for node in heuristics:
+        print(f"Node {node}: {heuristics[node]}")
 
     print(f"\nBest-First Search (Greedy) from {start} to {goal}:\n")
     best_first_search(graph, heuristics, start, goal)
